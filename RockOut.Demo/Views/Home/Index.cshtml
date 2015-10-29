@@ -1,0 +1,16 @@
+﻿@using RockOut.Demo.Models
+@model RockOut.Demo.Models.ViewModel
+
+@{
+    ViewBag.Title = "title";
+}
+
+<h2>title</h2>
+
+
+<ul>
+    @foreach (ListElementModel li in Model.BulletPoints)
+    {
+        <li key="@li.Value">@li.Label</li>
+    }
+</ul>
