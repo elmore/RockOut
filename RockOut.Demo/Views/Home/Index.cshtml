@@ -1,16 +1,37 @@
 ﻿@using RockOut.Demo.Models
-@model RockOut.Demo.Models.ViewModel
+@using RockOut.HtmlHelpers
+@model ViewModel
 
 @{
     ViewBag.Title = "title";
 }
 
-<h2>title</h2>
+<h2 data-bind="text : Title">@Model.Title</h2>
 
 
-<ul>
-    @foreach (ListElementModel li in Model.BulletPoints)
+<ul data-bind="foreach : BulletPoints">
+    
+    @RockOut.Foreach(Model.BulletPoints, li =>
     {
-        <li key="@li.Value">@li.Label</li>
-    }
+
+        return string.Format("<li data-bind=\"text : Label, attr : {{ key : Value }}\" key=\"{0}\">{1}</li>", li.Value, li.Label);
+    })
 </ul>
+
+<button id="update-button" onclick="update()">update</button>
+
+<script language="javascript" type="text/javascript">
+
+    function ViewModel() {
+
+        this.BulletPoints = [{ Value: "3", Label: "updated" }];
+
+        this.Title = "updated title";
+    }
+
+    function update() {
+
+        ko.applyBindings(new ViewModel());
+    }
+
+</script>
