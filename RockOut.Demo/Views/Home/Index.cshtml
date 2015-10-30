@@ -9,12 +9,15 @@
 <h2 data-bind="text : Title">@Model.Title</h2>
 
 
+
 <ul data-bind="foreach : BulletPoints">
     
     @RockOut.Foreach(Model.BulletPoints, li =>
     {
 
-        return string.Format("<li data-bind=\"text : Label, attr : {{ key : Value }}\" key=\"{0}\">{1}</li>", li.Value, li.Label);
+        return RockOut.Li(li.Label, new Dictionary<string, object> { { "key", li.Value } });
+        
+        //return string.Format("<li data-bind=\"text : Label, attr : {{ key : Value }}\" key=\"{0}\">{1}</li>", li.Value, li.Label);
     })
 </ul>
 
