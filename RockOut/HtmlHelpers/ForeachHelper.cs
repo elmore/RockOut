@@ -3,19 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Web;
-using System.Web.UI.HtmlControls;
 
 namespace RockOut.HtmlHelpers
 {
     public class RockOut
     {
-        public static HtmlString Foreach(IEnumerable collection, Func<dynamic, object> template)
+        public static HtmlString Foreach(IEnumerable collection, Func<dynamic, RepeatedHtmlElement> template)
         {
             var sb = new StringBuilder();
 
+            bool first = true;
+
             foreach (dynamic el in collection)
             {
-                sb.AppendLine(template(el).ToString());
+                RepeatedHtmlElement repeated = template(el);
+
+                HtmlString s = first ? repeated.AsFirstElement() : repeated.AsElement();
+
+                sb.AppendLine(s.ToString());
+
+                first = false;
             }
 
             string htmlString = sb.ToString();
@@ -23,28 +30,50 @@ namespace RockOut.HtmlHelpers
             return new HtmlString(htmlString);
         }
 
-        public static HtmlString Li(string text, IDictionary<string, object> attributes) // 
+        public static RepeatedHtmlElement Li(string text, IDictionary<string, object> attributes) 
         {
 
-            //var li = new HtmlGenericControl();
-            ////li.Attributes.Add("key", attributes.key);
-            //li.TagName = "li";
-            //li.InnerText = text;
-            //string htmlString = li.RenderControl().ToString();
+            return new RepeatedHtmlElement(text, attributes);
+        }
+    }
 
+    public class RepeatedHtmlElement
+    {
+        private readonly string _text;
+        private readonly IDictionary<string, object> _attributes;
 
-            foreach (var attr in attributes)
+        public RepeatedHtmlElement(string text, IDictionary<string, object> attributes)
+        {
+            _text = text;
+            _attributes = attributes;
+        }
+
+        public HtmlString AsFirstElement()
+        {
+            var attrSb = new StringBuilder();
+            var koSb = new StringBuilder();
+
+            foreach (var attr in _attributes)
             {
-
+                koSb.AppendFormat("{0} : {1}", attr.Key, attr.Value);
+                attrSb.AppendFormat("{0}=\"{1}\"", attr.Key, attr.Value);
             }
 
+            string htmlString = string.Format("<li data-bind=\"text : Label, attr : {{ {0} }}\" {1}>{2}</li>", koSb, attrSb, _text);
 
+            return new HtmlString(htmlString);
+        }
 
-            string htmlString = string.Format("<li data-bind=\"text : Label, attr : {{ key : Value }}\" key=\"{0}\">{1}</li>", attributes["key"], text);
+        public HtmlString AsElement()
+        {
+            var attrSb = new StringBuilder();
 
+            foreach (var attr in _attributes)
+            {
+                attrSb.AppendFormat("{0}=\"{1}\"", attr.Key, attr.Value);
+            }
 
-
-
+            string htmlString = string.Format("<li {0}>{1}</li>", attrSb, _text);
 
             return new HtmlString(htmlString);
         }
