@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Web;
 
@@ -50,32 +51,36 @@ namespace RockOut.HtmlHelpers
 
         public HtmlString AsFirstElement()
         {
-            var attrSb = new StringBuilder();
-            var koSb = new StringBuilder();
+            var allAtts = _attributes;
 
-            foreach (var attr in _attributes)
-            {
-                koSb.AppendFormat("{0} : {1}", attr.Key, attr.Value);
-                attrSb.AppendFormat("{0}=\"{1}\"", attr.Key, attr.Value);
-            }
+            allAtts.Add("data-bind", TemplateKoString());
 
-            string htmlString = string.Format("<li data-bind=\"text : Label, attr : {{ {0} }}\" {1}>{2}</li>", koSb, attrSb, _text);
+            string htmlString = Template(allAtts);
 
             return new HtmlString(htmlString);
         }
 
         public HtmlString AsElement()
         {
-            var attrSb = new StringBuilder();
-
-            foreach (var attr in _attributes)
-            {
-                attrSb.AppendFormat("{0}=\"{1}\"", attr.Key, attr.Value);
-            }
-
-            string htmlString = string.Format("<li {0}>{1}</li>", attrSb, _text);
+            string htmlString = Template(_attributes);
 
             return new HtmlString(htmlString);
+        }
+
+        private string Template(IDictionary<string, object>  allAtts)
+        {
+            var atts = allAtts.Select(attr => string.Format("{0}=\"{1}\"", attr.Key, attr.Value)).ToList();
+
+            var attrSb = string.Join(" ", atts);
+
+            return string.Format("<li {0}>{1}</li>", attrSb, _text);
+        }
+
+        private string TemplateKoString()
+        {
+            var koSb = _attributes.Select(attr => string.Format("{0} : {1}", attr.Key, attr.Value)).ToList();
+
+            return string.Format("text : Label, attr : {{ {0} }}", string.Join(",", koSb));
         }
     }
 }
