@@ -9,11 +9,9 @@
 <h2 data-bind="text : Title">@Model.Title</h2>
 
 @RockOut.Ul(
-
-    @RockOut.Foreach(Model, "BulletPoints", li =>
-    {
-        return RockOut.Li("Label", new Dictionary<string, string> { { "key", "Value" } });
-    })
+    RockOut.Foreach(Model, "BulletPoints", li => 
+        RockOut.Li("Label", new Dictionary<string, string> { { "key", "Value" } })
+    )
 )
 
 
