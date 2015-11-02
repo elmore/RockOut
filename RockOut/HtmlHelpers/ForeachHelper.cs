@@ -33,17 +33,35 @@ namespace RockOut.HtmlHelpers
 
             string htmlString = sb.ToString();
 
-            return new ComposableHtmlString(htmlString);
+            return new ComposableHtmlString(htmlString, collectionFieldName);
         }
 
         public static RepeatedHtmlElement Li(string text, IDictionary<string, string> attributes) 
         {
             return new RepeatedHtmlElement(text, attributes);
         }
+
+        public static HtmlString Ul(HtmlString innerHtml)
+        {
+            var composedHtml = innerHtml as ComposableHtmlString;
+
+            if (composedHtml != null)
+            {
+                return new HtmlString(string.Format("<ul data-bind=\"foreach : {0}\">{1}</ul>", composedHtml.CollectionFieldName, innerHtml));
+            }
+
+            return new HtmlString(string.Format("<ul>{0}</ul>", innerHtml));
+        }
     }
 
     public class ComposableHtmlString : HtmlString
     {
+        public string CollectionFieldName { get; private set; }
+
         public ComposableHtmlString(string value) : base(value) { }
+        public ComposableHtmlString(string value, string collectionFieldName) : base(value)
+        {
+            CollectionFieldName = collectionFieldName;
+        }
     }
 }
