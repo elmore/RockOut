@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HtmlHelpers\ForeachHelper.cs" />
+    <Compile Include="HtmlHelpers\Reflector.cs" />
+    <Compile Include="HtmlHelpers\RepeatedHtmlElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
