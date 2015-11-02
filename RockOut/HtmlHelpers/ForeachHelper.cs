@@ -25,7 +25,7 @@ namespace RockOut.HtmlHelpers
             {
                 RepeatedHtmlElement repeated = template(el);
 
-                HtmlString s = first ? repeated.AsFirstElement(el) : repeated.AsElement(el);
+                ComposableHtmlString s = first ? repeated.AsFirstElement(el) : repeated.AsElement(el);
 
                 sb.AppendLine(s.ToString());
 
@@ -34,13 +34,20 @@ namespace RockOut.HtmlHelpers
 
             string htmlString = sb.ToString();
 
-            return new HtmlString(htmlString);
+            return new ComposableHtmlString(htmlString);
         }
 
         public static RepeatedHtmlElement Li(string text, IDictionary<string, string> attributes) 
         {
             return new RepeatedHtmlElement(text, attributes);
         }
+    }
+
+    public class ComposableHtmlString : HtmlString
+    {
+        public ComposableHtmlString(string value) : base(value) { }
+
+
     }
 
     public class RepeatedHtmlElement
@@ -54,7 +61,7 @@ namespace RockOut.HtmlHelpers
             _attributes = attributes;
         }
 
-        public HtmlString AsFirstElement(object model)
+        public ComposableHtmlString AsFirstElement(object model)
         {
             var allAtts = GetPropertyValues(model);
 
@@ -62,16 +69,16 @@ namespace RockOut.HtmlHelpers
 
             string htmlString = Template(model, allAtts);
 
-            return new HtmlString(htmlString);
+            return new ComposableHtmlString(htmlString);
         }
 
-        public HtmlString AsElement(object model)
+        public ComposableHtmlString AsElement(object model)
         {
             var allAtts = GetPropertyValues(model);
 
             string htmlString = Template(model, allAtts);
 
-            return new HtmlString(htmlString);
+            return new ComposableHtmlString(htmlString);
         }
 
         private string Template(object model, IDictionary<string, string> allAtts)
