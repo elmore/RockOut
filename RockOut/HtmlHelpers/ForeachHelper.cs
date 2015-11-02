@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,11 +8,18 @@ namespace RockOut.HtmlHelpers
 {
     public class RockOut
     {
-        public static HtmlString Foreach(IEnumerable collection, Func<dynamic, RepeatedHtmlElement> template)
+        public static HtmlString Foreach(object model, string collectionFieldName, Func<dynamic, RepeatedHtmlElement> template)
         {
             var sb = new StringBuilder();
 
             bool first = true;
+
+            var collection = Reflector.GetValue(model, collectionFieldName) as IEnumerable<object>;
+
+            if(collection == null)            
+            {
+                throw new ArgumentException(string.Format("The field '{0}' is not IEnumerable<object>", collectionFieldName));
+            }
 
             foreach (dynamic el in collection)
             {
@@ -74,7 +80,7 @@ namespace RockOut.HtmlHelpers
 
             var attrSb = string.Join(" ", atts);
 
-            return string.Format("<li {0}>{1}</li>", attrSb, GetValue(model, _textFieldName));
+            return string.Format("<li {0}>{1}</li>", attrSb, Reflector.GetValue(model, _textFieldName));
         }
 
         private string TemplateKoString()
@@ -84,18 +90,28 @@ namespace RockOut.HtmlHelpers
             return string.Format("text : {0}, attr : {{ {1} }}", _textFieldName, string.Join(",", koSb));
         }
 
-        private string GetValue(object model, string field)
+        private Dictionary<string, string> GetPropertyValues(object model)
+        {
+            return _attributes.ToDictionary(a => a.Key, a => Reflector.GetValue(model, a.Value).ToString());
+        }
+    }
+
+    static class Reflector
+    {
+        public static object GetValue(object model, string field)
         {
             Type objtype = model.GetType();
 
             var info = objtype.GetProperty(field);
 
-            return info.GetValue(model, null).ToString();
-        }
+            if (info == null)
+            {
+                throw new ArgumentException(string.Format("Field '{0}' does not exist on type '{1}'",
+                    field,
+                    objtype.Name));
+            }
 
-        private Dictionary<string, string> GetPropertyValues(object model)
-        {
-            return _attributes.ToDictionary(a => a.Key, a => GetValue(model, a.Value));
+            return info.GetValue(model, null);
         }
     }
 }
