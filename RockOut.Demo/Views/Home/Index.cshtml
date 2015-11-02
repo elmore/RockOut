@@ -14,7 +14,7 @@
     
     @RockOut.Foreach(Model.BulletPoints, li =>
     {
-        return RockOut.Li(li.Label, new Dictionary<string, string> { { "key", "Value" } });
+        return RockOut.Li("Label", new Dictionary<string, string> { { "key", "Value" } });
     })
 </ul>
 
