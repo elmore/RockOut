@@ -1,4 +1,5 @@
-﻿namespace RockOut.Demo.Models
+﻿
+namespace RockOut.Demo.Models
 {
     public class ListElementModel
     {
